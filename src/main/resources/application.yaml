@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: meme-api
+
+server:
+  port: 8443
+
+media:
+  path: /tmp/
