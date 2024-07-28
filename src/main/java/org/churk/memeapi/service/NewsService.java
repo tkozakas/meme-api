@@ -26,7 +26,7 @@ public class NewsService {
                         newsProperties.getLanguage(),
                         from.format(DateTimeFormatter.ISO_LOCAL_DATE)
                 ).articles().stream()
-                .limit(10)
+                .limit(1)
                 .toList();
     }
 }

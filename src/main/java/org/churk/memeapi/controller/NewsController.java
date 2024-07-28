@@ -4,10 +4,7 @@ import lombok.AllArgsConstructor;
 import org.churk.memeapi.model.Article;
 import org.churk.memeapi.service.NewsService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,7 +20,7 @@ public class NewsController {
      * @param category The category to get the news from.
      * @return The news articles.
      */
-    @GetMapping("/{category}")
+    @PostMapping("/{category}")
     public ResponseEntity<List<Article>> getNews(@PathVariable("category") String category) {
         List<Article> news = newsService.getNews(category);
         return news.isEmpty() ?

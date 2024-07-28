@@ -13,7 +13,6 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class MemeService {
-    private final DownloadService downloadService;
     private final RedditClient redditClient;
     private final ShitpostingClient shitpostingClient;
 
