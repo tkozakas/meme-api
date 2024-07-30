@@ -1,6 +1,6 @@
 # Meme api
 
-Meme apit hat provides random memes, news, and other functionalities.
+Meme api that provides random memes, news, and other functionalities.
 
 ## Configuration
 In order to run the API, you need to create a `.env` file in the root directory of the project with the following environment variables:
