@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Enumeration;
 
 public class RequestFilter extends OncePerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(RequestFilter.class);
@@ -17,7 +18,28 @@ public class RequestFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws IOException, ServletException {
 
-        logger.info("Incoming request: {} {} from {}", request.getMethod(), request.getRequestURI(), request.getRemoteAddr());
+        StringBuilder logMessage = new StringBuilder();
+        logMessage.append("Incoming request: ")
+                .append(request.getMethod())
+                .append(" ")
+                .append(request.getRequestURI())
+                .append(" from ")
+                .append(request.getRemoteAddr());
+
+        Enumeration<String> parameterNames = request.getParameterNames();
+        if (parameterNames.hasMoreElements()) {
+            logMessage.append(" with parameters: ");
+            while (parameterNames.hasMoreElements()) {
+                String paramName = parameterNames.nextElement();
+                String paramValue = request.getParameter(paramName);
+                logMessage.append(paramName).append("=").append(paramValue);
+                if (parameterNames.hasMoreElements()) {
+                    logMessage.append(", ");
+                }
+            }
+        }
+
+        logger.info(logMessage.toString());
 
         filterChain.doFilter(request, response);
     }
