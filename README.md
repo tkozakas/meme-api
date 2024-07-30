@@ -6,7 +6,7 @@ Meme api that provides random memes, news, and other functionalities.
 Create a `.env` file in the root directory of the project with the following environment variables:
 ```env
 ELEVENLABS_API_KEY=<<YOUR_ELEVENLABS_API_KEY1, YOUR_ELEVENLABS_API_KEY2, ...>>
-ELEVENLABS_VOICE_ID=Ybqj6CIlqb6M85s9Bl4n;
+ELEVENLABS_VOICE_ID=Ybqj6CIlqb6M85s9Bl4n; # Default voice id
 
 GROQ_API_KEY=<<YOUR_GROQ_API_KEY>>;
 GROQ_MODEL=<<YOUR_GROQ_MODEL>>;
