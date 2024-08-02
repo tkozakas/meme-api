@@ -22,18 +22,9 @@ public class TtsController {
      */
     @PostMapping(value = "/tts", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<byte[]> getTts(@RequestBody String text) {
-        try {
-            log.debug("Received text for TTS: {}", text);
-            byte[] tts = ttsService.getTts(text);
-            if (tts == null) {
-                log.debug("TTS service returned null for text: {}", text);
-                return ResponseEntity.notFound().build();
-            }
-            log.debug("TTS service returned data for text: {}", text);
-            return ResponseEntity.ok(tts);
-        } catch (Exception e) {
-            log.error("Exception encountered while processing text: {}", text, e);
-            return ResponseEntity.status(500).body(null);
-        }
+        byte[] tts = ttsService.getTts(text);
+        return tts == null ?
+                ResponseEntity.notFound().build() :
+                ResponseEntity.ok(tts);
     }
 }

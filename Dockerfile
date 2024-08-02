@@ -29,4 +29,4 @@ USER meme-api
 
 ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]
 
-# docker build -t tomas6446/meme-api:latest .
+# docker build -t tomas6446/meme-api:master .
