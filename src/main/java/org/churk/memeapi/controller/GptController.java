@@ -1,6 +1,7 @@
 package org.churk.memeapi.controller;
 
 import lombok.AllArgsConstructor;
+import org.churk.memeapi.dto.GptRequest;
 import org.churk.memeapi.service.GptService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +19,9 @@ public class GptController {
      * @param prompt The text to get the GPT response from.
      * @return The GPT response.
      */
-    @PostMapping(value = "/prompt", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
-    public ResponseEntity<String> getGpt(@RequestBody String prompt) {
-        String gpt = gptService.getGpt(prompt);
+    @PostMapping(value = "/prompt")
+    public ResponseEntity<String> getGpt(@RequestBody GptRequest gptRequest) {
+        String gpt = gptService.getGpt(gptRequest);
         return gpt == null ?
                 ResponseEntity.notFound().build() :
                 ResponseEntity.ok(gpt);
