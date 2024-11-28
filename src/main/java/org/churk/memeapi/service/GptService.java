@@ -17,7 +17,7 @@ import java.util.LinkedList;
 public class GptService {
 
     private static final HashMap<Long, LinkedList<String>> memory = new HashMap<>();
-    private static final int MEMORY_SIZE_LIMIT = 500;
+    private static final int MEMORY_SIZE_LIMIT = 1000;
 
     private final GroqProperties groqProperties;
     private final GroqClient groqClient;
@@ -27,25 +27,26 @@ public class GptService {
         return "Memory cleared.";
     }
 
-    public String getGpt(GptRequest gptRequest) {
-        String memoryPrompt = groqProperties.getInitialPrompt();
-        String message = removeUnnecessaryCharacters(gptRequest.getPrompt());
-        String prompt = memoryPrompt.formatted(getFormattedMemory(gptRequest.getChatId(), gptRequest.getUsername()), message);
-        addToMemory(gptRequest.getChatId(), message);
-        GroqRequest request = new GroqRequest(prompt, groqProperties);
-        System.out.printf("Prompt: %s\n", prompt);
-        return groqClient.getChatCompletion("Bearer " + groqProperties.getApiKey(), request)
-                .getChoices().getFirst().getMessage().getContent();
+    public String getMemory(Long chatId) {
+        LinkedList<String> chatMemory = memory.getOrDefault(chatId, new LinkedList<>());
+        return String.join("\n", chatMemory);
     }
 
-    private String getFormattedMemory(Long chatId, String username) {
-        LinkedList<String> chatMemory = memory.getOrDefault(chatId, new LinkedList<>());
-        StringBuilder formattedMemory = new StringBuilder();
-        for (String msg : chatMemory) {
-            formattedMemory.append("you: ").append(msg).append("\n");
-            formattedMemory.append(username).append(": ").append(msg).append("\n");
-        }
-        return formattedMemory.toString();
+    public String getGpt(GptRequest gptRequest) {
+        Long chatId = gptRequest.getChatId();
+        String userMessage = gptRequest.getPrompt();
+        addToMemory(chatId, "User: " + userMessage);
+        String fullPrompt = buildFullPrompt(chatId, userMessage);
+        GroqRequest request = new GroqRequest(fullPrompt, groqProperties);
+        String chatbotResponse = groqClient.getChatCompletion("Bearer " + groqProperties.getApiKey(), request)
+                .getChoices().getFirst().getMessage().getContent();
+        addToMemory(chatId, "Bot: " + chatbotResponse);
+        return chatbotResponse;
+    }
+
+    private String buildFullPrompt(Long chatId, String userMessage) {
+        String conversationMemory = getMemory(chatId);
+        return groqProperties.getInitialPrompt().formatted(conversationMemory, userMessage);
     }
 
     private void addToMemory(Long chatId, String message) {
@@ -54,14 +55,5 @@ public class GptService {
         if (chatMemory.size() > MEMORY_SIZE_LIMIT) {
             chatMemory.removeFirst();
         }
-    }
-
-    private String removeUnnecessaryCharacters(String text) {
-        return text.replaceAll("\\[.*?\\]", "")
-                .replaceAll("\\(.*?\\)", "")
-                .replaceAll("https?://\\S+\\s?", "")
-                .replaceAll("www.\\S+\\s?", "")
-                .replaceAll("\\s+", " ")
-                .trim();
     }
 }

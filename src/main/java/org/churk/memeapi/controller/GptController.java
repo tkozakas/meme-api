@@ -40,4 +40,12 @@ public class GptController {
                 ResponseEntity.notFound().build() :
                 ResponseEntity.ok(message);
     }
+
+    @PostMapping(value = "/memory/{chatId}")
+    public ResponseEntity<String> getMemory(@PathVariable("chatId") Long chatId) {
+        String memory = gptService.getMemory(chatId);
+        return memory == null ?
+                ResponseEntity.notFound().build() :
+                ResponseEntity.ok(memory);
+    }
 }
