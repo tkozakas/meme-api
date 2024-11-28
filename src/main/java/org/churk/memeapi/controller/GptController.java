@@ -26,4 +26,18 @@ public class GptController {
                 ResponseEntity.notFound().build() :
                 ResponseEntity.ok(gpt);
     }
+
+    /**
+     * Clear the memory of the chat.
+     *
+     * @param chatId The chat to clear the memory from.
+     * @return The memory cleared message.
+     */
+    @PostMapping(value = "/clear/{chatId}")
+    public ResponseEntity<String> clearMemory(@PathVariable("chatId") Long chatId) {
+        String message = gptService.clearMemory(chatId);
+        return message == null ?
+                ResponseEntity.notFound().build() :
+                ResponseEntity.ok(message);
+    }
 }

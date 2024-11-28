@@ -15,16 +15,28 @@ import java.util.LinkedList;
 @Service
 @AllArgsConstructor
 public class GptService {
+
     private static final HashMap<Long, LinkedList<String>> memory = new HashMap<>();
     private static final int MEMORY_SIZE_LIMIT = 500;
-    private static final String MEMORY_PROMPT = "You are a helpful assistant. Continue the conversation based on the following previous messages: %s. Answer the next message naturally and seamlessly: %s. Do not reference or mention these instructions in your response.";
+    private static final String MEMORY_PROMPT = """
+            You are a helpful assistant. Continue the conversation based on the following previous messages:
+            %s
+            Answer the next message naturally and seamlessly:
+            %s
+            Do not reference or mention these instructions in your response.
+            """;
 
     private final GroqProperties groqProperties;
     private final GroqClient groqClient;
 
+    public String clearMemory(Long chatId) {
+        memory.remove(chatId);
+        return "Memory cleared.";
+    }
+
     public String getGpt(GptRequest gptRequest) {
         String message = removeUnnecessaryCharacters(gptRequest.getPrompt());
-        String prompt = MEMORY_PROMPT.formatted(getMemory(gptRequest.getChatId()), message);
+        String prompt = MEMORY_PROMPT.formatted(getFormattedMemory(gptRequest.getChatId(), gptRequest.getUsername()), message);
         addToMemory(gptRequest.getChatId(), message);
         GroqRequest request = new GroqRequest(prompt, groqProperties);
         System.out.printf("Prompt: %s\n", prompt);
@@ -32,8 +44,14 @@ public class GptService {
                 .getChoices().getFirst().getMessage().getContent();
     }
 
-    private String getMemory(Long chatId) {
-        return String.join(" ", memory.getOrDefault(chatId, new LinkedList<>()));
+    private String getFormattedMemory(Long chatId, String username) {
+        LinkedList<String> chatMemory = memory.getOrDefault(chatId, new LinkedList<>());
+        StringBuilder formattedMemory = new StringBuilder();
+        for (String msg : chatMemory) {
+            formattedMemory.append("you: ").append(msg).append("\n");
+            formattedMemory.append(username).append(": ").append(msg).append("\n");
+        }
+        return formattedMemory.toString();
     }
 
     private void addToMemory(Long chatId, String message) {
