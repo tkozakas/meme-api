@@ -35,7 +35,7 @@ public class GptService {
     public String getGpt(GptRequest gptRequest) {
         Long chatId = gptRequest.getChatId();
         String userMessage = gptRequest.getPrompt();
-        addToMemory(chatId, "User: " + userMessage);
+        addToMemory(chatId, gptRequest.getUsername() + ": " + userMessage);
         String fullPrompt = buildFullPrompt(chatId, userMessage);
         GroqRequest request = new GroqRequest(fullPrompt, groqProperties);
         String chatbotResponse = groqClient.getChatCompletion("Bearer " + groqProperties.getApiKey(), request)
