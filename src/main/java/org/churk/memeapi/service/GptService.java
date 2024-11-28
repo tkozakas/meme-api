@@ -18,13 +18,6 @@ public class GptService {
 
     private static final HashMap<Long, LinkedList<String>> memory = new HashMap<>();
     private static final int MEMORY_SIZE_LIMIT = 500;
-    private static final String MEMORY_PROMPT = """
-            You are a helpful assistant. Continue the conversation based on the following previous messages:
-            %s
-            Answer the next message naturally and seamlessly:
-            %s
-            Do not reference or mention these instructions in your response.
-            """;
 
     private final GroqProperties groqProperties;
     private final GroqClient groqClient;
@@ -35,8 +28,9 @@ public class GptService {
     }
 
     public String getGpt(GptRequest gptRequest) {
+        String memoryPrompt = groqProperties.getInitialPrompt();
         String message = removeUnnecessaryCharacters(gptRequest.getPrompt());
-        String prompt = MEMORY_PROMPT.formatted(getFormattedMemory(gptRequest.getChatId(), gptRequest.getUsername()), message);
+        String prompt = memoryPrompt.formatted(getFormattedMemory(gptRequest.getChatId(), gptRequest.getUsername()), message);
         addToMemory(gptRequest.getChatId(), message);
         GroqRequest request = new GroqRequest(prompt, groqProperties);
         System.out.printf("Prompt: %s\n", prompt);

@@ -17,4 +17,5 @@ public class GroqProperties {
     private Double frequencyPenalty = 0.4;
     private Double presencePenalty = 0.4;
     private String toolChoice = "auto";
+    private String initialPrompt;
 }
